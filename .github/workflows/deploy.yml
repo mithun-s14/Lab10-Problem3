@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Next.js app to GitHub Pages
 
 on:
   push:
@@ -6,19 +6,28 @@ on:
       - main
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
-    - name: Install Dependencies
-      run: npm install
-    - name: Build and Export
-      run: |
-        npm run build
-        npx next export
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./out
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and export the app
+        run: |
+          npm run build
+          npm run export  # Ensure export works, the static files will be in 'out/'
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out  # GitHub Pages needs the content from the 'out' directory
